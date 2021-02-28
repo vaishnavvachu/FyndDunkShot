@@ -9,22 +9,27 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public Camera MainCamera;
     public GameObject BasketPrefab;
+    public GameObject BallPrefab;
     #endregion
 
     #region PRIVATE Variables
     float ScreenHeight, ScreenWidth;
     int CurrentBasketNumber = 0;
     Transform[] Baskets;
+    Transform Ball;
     int TotalBaskets = 3;
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
+      
         instance = this;
         MainCamera = Camera.main;
         Baskets = new Transform[TotalBaskets];
-        //Create the First Basket with the Ball in it,
+        Ball = null;
+
+        //Create the First Basket 
         //Keep a random position within ScreenHeight & ScreenWidth
 
         ScreenHeight = Screen.height;
@@ -35,9 +40,12 @@ public class GameManager : MonoBehaviour
         //Then add another Basket to move the ball to.
         SpawnBasketsAtXYPos(ScreenHeight * 0.4f, ScreenWidth * 0.25f, 1);
 
-
+        //Spawn a Ball in the First Basket
+        SpawnABall();
 
     }
+
+    
 
     //Spawn Baskets at specified X and Y Position 
     //and mark BasketCount
@@ -61,6 +69,18 @@ public class GameManager : MonoBehaviour
         Baskets[BasketCount].gameObject.SetActive(true);
     }
 
+    private void SpawnABall()
+    {
+        if (Ball == null)
+        {
+            GameObject BasketBall = Instantiate(BallPrefab);
+            Ball = BasketBall.transform;
+        }
+            
+        Ball.SetParent(Baskets[CurrentBasketNumber]);
+        Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
+        Ball.gameObject.SetActive(true);
+    }
     // Update is called once per frame
     void Update()
     {
