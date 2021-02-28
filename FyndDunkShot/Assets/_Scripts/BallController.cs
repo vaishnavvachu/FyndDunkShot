@@ -7,6 +7,7 @@ public class BallController : MonoBehaviour
     #region PUBLIC Variables
     public bool isBallLaunched;
     public int CurrentBasketIndex;
+    public static BallController instance;
 
     #endregion
 
@@ -24,6 +25,9 @@ public class BallController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        isBallLaunched = false;
+        instance = this;
+
         BallRigidbody2D = GetComponent<Rigidbody2D>();
         Power = 5f;
         TotalForce = 7f;

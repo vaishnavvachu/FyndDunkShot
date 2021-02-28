@@ -35,10 +35,10 @@ public class GameManager : MonoBehaviour
         ScreenHeight = Screen.height;
         ScreenWidth = Screen.width;
 
-        SpawnBasketsAtXYPos(ScreenHeight * 0.2f, ScreenWidth * 0.75f, 0);
+        SpawnBasketsAtXYPos(ScreenWidth * 0.30f, ScreenHeight * 0.25f, 0);
 
         //Then add another Basket to move the ball to.
-        SpawnBasketsAtXYPos(ScreenHeight * 0.4f, ScreenWidth * 0.25f, 1);
+        SpawnBasketsAtXYPos(ScreenWidth * 0.75f, ScreenHeight * 0.40f, 1);
 
         //Spawn a Ball in the First Basket
         SpawnABall();
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
        
         
         //Set BasketPrebs at XPos and YPos
-        Baskets[BasketCount].localScale = new Vector3(1, 1, 1);
+        Baskets[BasketCount].localScale = new Vector3(0.5f, 0.5f, 0.5f);
         Baskets[BasketCount].position = MainCamera.ScreenToWorldPoint(new Vector3(XPos, YPos, MainCamera.nearClipPlane));
         Baskets[BasketCount].gameObject.SetActive(true);
     }
