@@ -33,7 +33,6 @@ public class GameManager : MonoBehaviour
 
         //Create the First Basket 
         //Keep a random position within ScreenHeight & ScreenWidth
-
         ScreenHeight = Screen.height;
         ScreenWidth = Screen.width;
 
@@ -45,13 +44,16 @@ public class GameManager : MonoBehaviour
         //Spawn a Ball in the First Basket
         SpawnABall();
 
+        //Calculate World Screen Height, Width
         WorldScreenHeight = MainCamera.orthographicSize * 2;
         WorldScreenWidth = WorldScreenHeight * (ScreenWidth / ScreenHeight);
 
+        //Set Boundaries on both side of the screen
+        //Ball will bounce back when hit
+        SetScreenBoundaries();
     }
 
-    
-
+   
     //Spawn Baskets at specified X and Y Position 
     //and mark BasketCount
     private void SpawnBasketsAtXYPos(float XPos, float YPos, int BasketCount)
@@ -85,6 +87,24 @@ public class GameManager : MonoBehaviour
         Ball.SetParent(Baskets[CurrentBasketNumber]);
         Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
         Ball.gameObject.SetActive(true);
+    }
+
+    private void SetScreenBoundaries()
+    {
+        EdgeCollider2D[] edgeColliders = MainCamera.GetComponents<EdgeCollider2D>();
+
+        List<Vector2> newVerticies = new List<Vector2>();
+
+        newVerticies.Add(new Vector2(WorldScreenWidth / 2, WorldScreenHeight / 2));
+        newVerticies.Add(new Vector2(WorldScreenWidth / 2, -WorldScreenHeight / 2));
+        edgeColliders[0].points = newVerticies.ToArray();
+        newVerticies.Clear();
+
+
+        newVerticies.Add(new Vector2(-WorldScreenWidth / 2, WorldScreenHeight / 2));
+        newVerticies.Add(new Vector2(-WorldScreenWidth / 2, -WorldScreenHeight / 2));
+        edgeColliders[1].points = newVerticies.ToArray();
+
     }
     // Update is called once per frame
     void Update()

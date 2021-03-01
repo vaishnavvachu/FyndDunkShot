@@ -133,7 +133,7 @@ public class BallController : MonoBehaviour
     //With the help of the tiny Points
     private void ShowTrajectoryFromBallPosition()
     {
-        float PointSize = 0.1f;
+        float PointSize = 0.05f;
         int index = 0;
 
         Vector2 curvePoint = Vector2.zero;
@@ -166,12 +166,13 @@ public class BallController : MonoBehaviour
 
                 spriteRenderer.color = alpha;
 
-                PointSize -= 0.005f;
+                PointSize -= 0.0025f;
                 index++;
             }
         }
     }
 
+    //Hide the Trajectory When the Touch is no longer there
     private void HideTrajectoryFromBall()
     {
         for (int n = 0; n < TotalNumberOfPoints; n++)
@@ -181,8 +182,10 @@ public class BallController : MonoBehaviour
         }
     }
 
+    //Do Not change speed and direction after collision
     void OnCollisionEnter2D(Collision2D collision2D)
     {
+        Debug.Log(collision2D.gameObject.name);
         normal = collision2D.contacts[0].normal;
     }
 
