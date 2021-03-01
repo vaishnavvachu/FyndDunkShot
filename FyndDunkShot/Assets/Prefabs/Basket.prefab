@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6907735073416145366}
   - component: {fileID: 6907735073416145367}
   - component: {fileID: 6907735073416145364}
+  - component: {fileID: 1143959339623998668}
   m_Layer: 0
   m_Name: Basket
   m_TagString: Untagged
@@ -91,7 +92,7 @@ EdgeCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -100,6 +101,20 @@ EdgeCollider2D:
   - {x: -0.9504704, y: -0.25133598}
   - {x: -0.96164066, y: -0.25133598}
   - {x: -0.7169583, y: -0.5617958}
-  - {x: 0.009392524, y: -0.37270048}
+  - {x: -0.42741522, y: -0.8330581}
+  - {x: 0.022954488, y: -0.97620845}
+  - {x: 0.5969573, y: -0.8581006}
   - {x: 0.7212039, y: -0.5752803}
   - {x: 0.9560554, y: -0.24575084}
+--- !u!114 &1143959339623998668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907735073416145365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 835fae6d9be27c644b4435ced2fb7f23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
