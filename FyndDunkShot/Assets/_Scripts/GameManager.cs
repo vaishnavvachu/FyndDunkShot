@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public Camera MainCamera;
     public GameObject BasketPrefab;
     public GameObject BallPrefab;
+    public float WorldScreenWidth, WorldScreenHeight;
     #endregion
 
     #region PRIVATE Variables
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
     Transform Ball;
     int TotalBaskets = 3;
     #endregion
+
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +44,9 @@ public class GameManager : MonoBehaviour
 
         //Spawn a Ball in the First Basket
         SpawnABall();
+
+        WorldScreenHeight = MainCamera.orthographicSize * 2;
+        WorldScreenWidth = WorldScreenHeight * (ScreenWidth / ScreenHeight);
 
     }
 

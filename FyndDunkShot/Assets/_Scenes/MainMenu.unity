@@ -707,6 +707,8 @@ MonoBehaviour:
     type: 3}
   BallPrefab: {fileID: 1441742651579767731, guid: 13d3bbcc895b24a4fb29ca003769e381,
     type: 3}
+  WorldScreenWidth: 0
+  WorldScreenHeight: 0
 --- !u!4 &1447336566
 Transform:
   m_ObjectHideFlags: 0

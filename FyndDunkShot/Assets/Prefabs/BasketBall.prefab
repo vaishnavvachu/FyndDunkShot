@@ -134,3 +134,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBallLaunched: 0
   CurrentBasketIndex: 0
+  TrajectoryPointsPrefab: {fileID: 7124697882706274930, guid: 2a98cd227dec739439cff2fe9d794a4c,
+    type: 3}
