@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public GameObject BasketPrefab;
     public GameObject BallPrefab;
     public float WorldScreenWidth, WorldScreenHeight;
+    public bool SizeDecreased;
+    public int DecreasedSizeIndex = 0;
+
     #endregion
 
     #region PRIVATE Variables
@@ -19,6 +22,9 @@ public class GameManager : MonoBehaviour
     Transform[] Baskets;
     Transform Ball;
     int TotalBaskets = 3;
+    float BasketWidth;
+    int IncreasedSizeIndex;
+    bool SizeIncreased = false; 
     #endregion
 
 
@@ -51,9 +57,48 @@ public class GameManager : MonoBehaviour
         //Set Boundaries on both side of the screen
         //Ball will bounce back when hit
         SetScreenBoundaries();
+
+        //Calculate Width of the Basket Sprite
+        SpriteRenderer BasketSpriteRenderer = Baskets[0].GetComponent<SpriteRenderer>();
+
+        float BasketWidthMax = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.max.x, 0, 0)).x;
+        float BasketWidthMin = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.min.x, 0, 0)).x;
+        BasketWidth = BasketWidthMax - BasketWidthMin;
     }
 
-   
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            SpawnBasketAtRandomPosition();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (SizeDecreased)
+        {
+            Baskets[DecreasedSizeIndex].localScale -= new Vector3(0.3f, 0.3f, 0);
+            if (Baskets[DecreasedSizeIndex].localScale.x <= 0)
+            {
+                SizeDecreased = false;
+                Baskets[DecreasedSizeIndex].localScale = new Vector3(0, 0, 0);
+                Baskets[DecreasedSizeIndex].rotation = Quaternion.Euler(0, 0, 0);
+                Baskets[DecreasedSizeIndex].gameObject.SetActive(false);
+            }
+        }
+
+        if (SizeIncreased)
+        {
+            Baskets[IncreasedSizeIndex].localScale += new Vector3(0.3f, 0.3f, 0);
+            if (Baskets[IncreasedSizeIndex].localScale.x >= 1)
+            {
+                SizeIncreased = false;
+                Baskets[IncreasedSizeIndex].localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            }
+        }
+    }
+
     //Spawn Baskets at specified X and Y Position 
     //and mark BasketCount
     private void SpawnBasketsAtXYPos(float XPos, float YPos, int BasketCount)
@@ -65,6 +110,7 @@ public class GameManager : MonoBehaviour
             {
                 GameObject NewBasket = Instantiate(BasketPrefab);
                 NewBasket.SetActive(false);
+                NewBasket.GetComponent<BasketController>().index = n;
                 Baskets[n] = NewBasket.transform;
             }
         }
@@ -83,12 +129,15 @@ public class GameManager : MonoBehaviour
             GameObject BasketBall = Instantiate(BallPrefab);
             Ball = BasketBall.transform;
         }
-            
+        
+        //Attach the Ball as the Child of CurrentBasket
         Ball.SetParent(Baskets[CurrentBasketNumber]);
         Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
         Ball.gameObject.SetActive(true);
     }
 
+    //Take the two edge colliders on the Camera and 
+    //Place it on Both sides of the screen
     private void SetScreenBoundaries()
     {
         EdgeCollider2D[] edgeColliders = MainCamera.GetComponents<EdgeCollider2D>();
@@ -106,9 +155,55 @@ public class GameManager : MonoBehaviour
         edgeColliders[1].points = newVerticies.ToArray();
 
     }
-    // Update is called once per frame
-    void Update()
+    
+
+    //Calculate Screen EndPoints
+    //Spawn Basket at alternate side of the screen At Random X and Y coordinates
+    public void SpawnBasketAtRandomPosition()
     {
-        
+        CurrentBasketNumber = BallController.instance.CurrentBasketIndex;
+
+        float XEndPoint = 0;
+        float XStartingPoint = 0;
+
+        Vector3 CurrentBasketPosition = MainCamera.WorldToScreenPoint(Baskets[CurrentBasketNumber].position);
+
+        if(CurrentBasketPosition.x > ScreenWidth / 2)
+        {
+            XEndPoint = CurrentBasketPosition.x - BasketWidth;
+            XStartingPoint = 0 + BasketWidth;
+        }
+        else
+        {
+            XEndPoint = ScreenWidth - BasketWidth / 2;
+            XStartingPoint = CurrentBasketPosition.x + BasketWidth;
+        }
+
+        float YStartingPoint = CurrentBasketPosition.y + (ScreenHeight * 0.20f);
+        float YEndPoint = CurrentBasketPosition.y + (ScreenHeight * 0.40f);
+
+        float RandomX = UnityEngine.Random.Range(XStartingPoint, XEndPoint);
+        float RandomY = UnityEngine.Random.Range(YStartingPoint, YEndPoint);
+
+
+        //Get The Next Basket Index and 
+        //Spawn the basket at Random X and Y Position
+        Baskets[GetNextBasketIndex(CurrentBasketNumber)].position = MainCamera.ScreenToWorldPoint(new Vector3(RandomX, RandomY, MainCamera.nearClipPlane));
+        Baskets[IncreasedSizeIndex].gameObject.SetActive(true);
+        SizeIncreased = true;
     }
+
+    // Generate the Index for the Next Basket Based on the Previous Basket Index
+    private int GetNextBasketIndex(int index)
+    {
+        for(int n = 0; n< Baskets.Length; n++)
+        {
+            if (n != index && index != DecreasedSizeIndex)
+                return IncreasedSizeIndex = n;
+        }
+
+        return 0;
+    }
+
+
 }
