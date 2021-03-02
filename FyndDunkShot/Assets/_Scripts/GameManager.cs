@@ -66,14 +66,6 @@ public class GameManager : MonoBehaviour
         BasketWidth = BasketWidthMax - BasketWidthMin;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            SpawnBasketAtRandomPosition();
-        }
-    }
-
     private void LateUpdate()
     {
         if (SizeDecreased)
