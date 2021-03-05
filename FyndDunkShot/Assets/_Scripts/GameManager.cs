@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public float WorldScreenWidth, WorldScreenHeight;
     public bool SizeDecreased;
     public int DecreasedSizeIndex = 0;
+    public float Margin;
 
     #endregion
 
@@ -24,7 +25,9 @@ public class GameManager : MonoBehaviour
     int TotalBaskets = 3;
     float BasketWidth;
     int IncreasedSizeIndex;
-    bool SizeIncreased = false; 
+    bool SizeIncreased = false;
+    float CameraAndBasketYDifference;
+    float Spacing;
     #endregion
 
 
@@ -64,10 +67,57 @@ public class GameManager : MonoBehaviour
         float BasketWidthMax = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.max.x, 0, 0)).x;
         float BasketWidthMin = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.min.x, 0, 0)).x;
         BasketWidth = BasketWidthMax - BasketWidthMin;
+
+
+        //Distance between first spawned Basket and Camera
+        float CameraAndBasketYDifference = MainCamera.transform.position.y - Baskets[0].position.y;
+
+        //Margins
+        Spacing = WorldScreenHeight * Margin;
+        
     }
 
     private void LateUpdate()
     {
+        
+        //Move the Camera along with the Ball
+        
+        if (BallController.instance.isBallLaunched)
+        {
+            //Calculate Camera Bounds
+            float BallPosition = Ball.position.y;
+            float CameraPosition = MainCamera.transform.position.y - CameraAndBasketYDifference;
+            
+            float CameraBoundaryTop = CameraPosition + Spacing;
+            float CameraBoundaryBottom = CameraPosition - Spacing;
+
+            if (BallPosition > CameraBoundaryTop || BallPosition < CameraBoundaryBottom)
+            {
+                //If Ball Moves Up, 
+                //Move Camera Up
+                if (BallPosition > CameraBoundaryTop)
+                {
+                    MainCamera.transform.position = new Vector3(0, BallPosition + CameraAndBasketYDifference - Spacing, -10);
+                }
+
+                //Dont allow the Camera to Fall below the Current Basket Height
+                else if (BallPosition < CameraBoundaryBottom && CameraPosition > Baskets[CurrentBasketNumber].position.y)
+                {
+                    MainCamera.transform.position = new Vector3(0, BallPosition + CameraAndBasketYDifference + Spacing, -10);
+                }
+
+                //If Ball Drops Below 
+                //Spawn A New Ball
+                else if (BallPosition < CameraPosition - CameraAndBasketYDifference)
+                {
+                    BallController.instance.isBallLaunched = false;
+                    Ball.gameObject.SetActive(false);
+                    SpawnABall();
+                }
+            }
+        }
+
+
         if (SizeDecreased)
         {
             Baskets[DecreasedSizeIndex].localScale -= new Vector3(0.3f, 0.3f, 0);
@@ -89,6 +139,8 @@ public class GameManager : MonoBehaviour
                 Baskets[IncreasedSizeIndex].localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
         }
+
+
     }
 
     //Spawn Baskets at specified X and Y Position 

@@ -439,8 +439,8 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: -0.5, y: 0}
-  - {x: -0.6075721, y: 10.091213}
+  - {x: -2.801479, y: -3.7846527}
+  - {x: -2.7503757, y: -0.0058116913}
 --- !u!68 &963194230
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -457,9 +457,9 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: -0.5727005, y: -4.787296}
-  - {x: -0.49683893, y: 4.8098974}
-  - {x: -0.49413872, y: 4.0791774}
+  - {x: 2.8539455, y: -3.0995448}
+  - {x: 2.7617133, y: -4.8711886}
+  - {x: 2.881364, y: 2.084564}
 --- !u!1 &972648423
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,6 +709,9 @@ MonoBehaviour:
     type: 3}
   WorldScreenWidth: 0
   WorldScreenHeight: 0
+  SizeDecreased: 0
+  DecreasedSizeIndex: 0
+  Margin: 0.1
 --- !u!4 &1447336566
 Transform:
   m_ObjectHideFlags: 0
