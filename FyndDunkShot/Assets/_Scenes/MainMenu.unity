@@ -438,9 +438,7 @@ EdgeCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
-  m_Points:
-  - {x: -2.801479, y: -3.7846527}
-  - {x: -2.7503757, y: -0.0058116913}
+  m_Points: []
 --- !u!68 &963194230
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -456,10 +454,7 @@ EdgeCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
-  m_Points:
-  - {x: 2.8539455, y: -3.0995448}
-  - {x: 2.7617133, y: -4.8711886}
-  - {x: 2.881364, y: 2.084564}
+  m_Points: []
 --- !u!1 &972648423
 GameObject:
   m_ObjectHideFlags: 0
