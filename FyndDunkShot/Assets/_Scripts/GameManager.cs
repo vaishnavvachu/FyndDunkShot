@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,7 +16,10 @@ public class GameManager : MonoBehaviour
     public int DecreasedSizeIndex = 0;
     public float Margin;
     public int Score = 0;
-
+    public TextMeshProUGUI ScoreTextBox;
+    public CanvasGroup GameOverPanel;
+    public TextMeshProUGUI GameOverScoreTextBox;
+  
     #endregion
 
     #region PRIVATE Variables
@@ -29,6 +33,7 @@ public class GameManager : MonoBehaviour
     bool SizeIncreased = false;
     float CameraAndBasketYDifference;
     float Spacing;
+    
     #endregion
 
 
@@ -73,9 +78,14 @@ public class GameManager : MonoBehaviour
         //Distance between first spawned Basket and Camera
         float CameraAndBasketYDifference = MainCamera.transform.position.y - Baskets[0].position.y;
 
-        //Margins
+        //Calculate Margins
         Spacing = WorldScreenHeight * Margin;
+
+        //Hide GameOver Menu
+        GameOverPanel.alpha = 0;
+
         
+
     }
 
     private void LateUpdate()
@@ -83,7 +93,7 @@ public class GameManager : MonoBehaviour
         
         //Move the Camera along with the Ball
         
-        if (BallController.instance.isBallLaunched)
+        if (BallController.instance.isBallLaunched )
         {
             //Calculate Camera Bounds
             float BallPosition = Ball.position.y;
@@ -114,7 +124,7 @@ public class GameManager : MonoBehaviour
                     BallController.instance.isBallLaunched = false;
                     Ball.gameObject.SetActive(false);
                     SpawnABall();
-                   
+                    GameOver(); 
                 }
             }
         }
@@ -181,8 +191,7 @@ public class GameManager : MonoBehaviour
         Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
         Ball.gameObject.SetActive(true);
 
-        //Reset the Score if Ball Drops
-        ResetScore();
+        
     }
 
     //Take the two edge colliders on the Camera and 
@@ -256,14 +265,36 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseScoreCount()
     {
-
         Score++;
-        
+
+        //Display Score
+
+        ScoreTextBox.text = Score.ToString();
     }
 
-    private void ResetScore()
+    private void GameOver()
     {
+        //Show Game Over Screen
+        
+        GameOverPanel.alpha = 1;
+        GameOverScoreTextBox.text = "Your Score is: " + Score;
+        GameOverPanel.interactable = true;
+        Baskets[CurrentBasketNumber].transform.rotation = new Quaternion(0f,0f,0f,1);
+
+        Time.timeScale = 0;
+
+    }
+
+    public void PlayAgain()
+    {
+        //Reset Score
         Score = 0;
+
+        
+        GameOverPanel.alpha = 0;
+        GameOverPanel.interactable = false;
+
+        Time.timeScale = 1;
     }
 
 
