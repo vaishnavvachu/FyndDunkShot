@@ -7,6 +7,7 @@ public class BasketController : MonoBehaviour
     public static BasketController instance;
     public int index;
 
+
     private void Awake()
     {
         instance = this;
@@ -29,11 +30,16 @@ public class BasketController : MonoBehaviour
         //If Not then Spawn a New Basket at Random Position
         if(BallController.instance.CurrentBasketIndex != index)
         {
+          
             GameManager.instance.DecreasedSizeIndex = BallController.instance.CurrentBasketIndex;
             GameManager.instance.SizeDecreased = true;
             BallController.instance.CurrentBasketIndex = index;
 
             GameManager.instance.SpawnBasketAtRandomPosition();
+
+            //Increase the Score By 1
+            GameManager.instance.IncreaseScoreCount();
+
         }
     }
 }

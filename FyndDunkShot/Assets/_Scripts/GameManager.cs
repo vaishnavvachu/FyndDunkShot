@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public bool SizeDecreased;
     public int DecreasedSizeIndex = 0;
     public float Margin;
+    public int Score = 0;
 
     #endregion
 
@@ -113,6 +114,7 @@ public class GameManager : MonoBehaviour
                     BallController.instance.isBallLaunched = false;
                     Ball.gameObject.SetActive(false);
                     SpawnABall();
+                   
                 }
             }
         }
@@ -178,6 +180,9 @@ public class GameManager : MonoBehaviour
         Ball.SetParent(Baskets[CurrentBasketNumber]);
         Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
         Ball.gameObject.SetActive(true);
+
+        //Reset the Score if Ball Drops
+        ResetScore();
     }
 
     //Take the two edge colliders on the Camera and 
@@ -223,8 +228,8 @@ public class GameManager : MonoBehaviour
             XStartingPoint = CurrentBasketPosition.x + BasketWidth;
         }
 
-        float YStartingPoint = CurrentBasketPosition.y + (ScreenHeight * 0.20f);
-        float YEndPoint = CurrentBasketPosition.y + (ScreenHeight * 0.40f);
+        float YStartingPoint = CurrentBasketPosition.y + (ScreenHeight * 0.10f);
+        float YEndPoint = CurrentBasketPosition.y + (ScreenHeight * 0.30f);
 
         float RandomX = UnityEngine.Random.Range(XStartingPoint, XEndPoint);
         float RandomY = UnityEngine.Random.Range(YStartingPoint, YEndPoint);
@@ -247,6 +252,18 @@ public class GameManager : MonoBehaviour
         }
 
         return 0;
+    }
+
+    public void IncreaseScoreCount()
+    {
+
+        Score++;
+        
+    }
+
+    private void ResetScore()
+    {
+        Score = 0;
     }
 
 

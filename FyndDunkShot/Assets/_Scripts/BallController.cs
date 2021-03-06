@@ -185,8 +185,9 @@ public class BallController : MonoBehaviour
     //Do Not change speed and direction after collision
     void OnCollisionEnter2D(Collision2D collision2D)
     {
-        Debug.Log(collision2D.gameObject.name);
+        
         normal = collision2D.contacts[0].normal;
+       
     }
 
 }
