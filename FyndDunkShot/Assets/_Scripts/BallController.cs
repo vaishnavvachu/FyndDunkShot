@@ -24,6 +24,7 @@ public class BallController : MonoBehaviour
     GameObject[] Points;
     int TotalNumberOfPoints = 10;
     Vector3 normal;
+    UIController uiController;
     #endregion
 
 
@@ -32,6 +33,7 @@ public class BallController : MonoBehaviour
     {
         isBallLaunched = false;
         instance = this;
+        uiController = FindObjectOfType<UIController>();
     }
     // Start is called before the first frame update
     void Start()
@@ -51,6 +53,7 @@ public class BallController : MonoBehaviour
             Points[n].SetActive(false);
         }
 
+       
         GameManager gameManagerInstance = GameManager.instance;
 
         MinOffset = gameManagerInstance.MainCamera.transform.position.x - gameManagerInstance.WorldScreenWidth / 2;
@@ -74,6 +77,7 @@ public class BallController : MonoBehaviour
                     break;
 
                 case TouchPhase.Moved:
+                    uiController.BeginGame();
                     Vector2 toPosition = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
                     BallLaunchVelocity = CalculateForceBetween(InitialPosition, toPosition);
                     transform.parent.transform.rotation = Quaternion.Euler(0, 0, CalculateAngleBetween(InitialPosition, toPosition));

@@ -278,6 +278,7 @@ public class GameManager : MonoBehaviour
         Score++;
 
         //Display Score
+        ScoreTextBox.gameObject.SetActive(true);
 
         ScoreTextBox.text = Score.ToString();
 
@@ -289,7 +290,7 @@ public class GameManager : MonoBehaviour
     {
         //Show Game Over Screen
         GameOverPanel.alpha = 1;
-        GameOverScoreTextBox.text = "Your Score is: " + Score;
+        GameOverScoreTextBox.text = "" + Score;
         GameOverPanel.interactable = true;
         Baskets[CurrentBasketNumber].transform.rotation = new Quaternion(0f,0f,0f,1);
         
@@ -301,7 +302,7 @@ public class GameManager : MonoBehaviour
 
         HighScore = PlayerPrefs.GetInt("HighScore", 0);
 
-        HighScoreTextBox.text ="High Score:" + HighScore.ToString();
+        HighScoreTextBox.text = HighScore.ToString();
 
         Time.timeScale = 0;
 
