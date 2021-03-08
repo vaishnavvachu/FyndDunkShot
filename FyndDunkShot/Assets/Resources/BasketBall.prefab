@@ -136,5 +136,3 @@ MonoBehaviour:
   CurrentBasketIndex: 0
   TrajectoryPointsPrefab: {fileID: 7124697882706274930, guid: 2a98cd227dec739439cff2fe9d794a4c,
     type: 3}
-  audioSource: {fileID: 0}
-  bounceSound: {fileID: 8300000, guid: 8e6e71517ac3ba44f8ee1ba578545c3b, type: 3}

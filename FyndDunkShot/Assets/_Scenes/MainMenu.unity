@@ -2404,8 +2404,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 0}
-  BasketPrefab: {fileID: 0}
-  BallPrefab: {fileID: 0}
+  BasketPrefab: {fileID: 6907735073416145365, guid: 8f08814c41488f44b83c07d60275d44e,
+    type: 3}
+  BallPrefab: {fileID: 1441742651579767731, guid: 13d3bbcc895b24a4fb29ca003769e381,
+    type: 3}
   WorldScreenWidth: 0
   WorldScreenHeight: 0
   SizeDecreased: 0
@@ -2416,8 +2418,8 @@ MonoBehaviour:
   GameOverScoreTextBox: {fileID: 147130893}
   HighScoreTextBox: {fileID: 530290537}
   audioSource: {fileID: 270989692}
-  wooSoundClip: {fileID: 8300000, guid: a02898c9ed8fe824cbf4c762e36f1a40, type: 3}
-  bounceSoundClip: {fileID: 8300000, guid: 8e6e71517ac3ba44f8ee1ba578545c3b, type: 3}
+  WooSoundClip: {fileID: 8300000, guid: a02898c9ed8fe824cbf4c762e36f1a40, type: 3}
+  BounceSoundClip: {fileID: 8300000, guid: 8e6e71517ac3ba44f8ee1ba578545c3b, type: 3}
 --- !u!4 &1447336566
 Transform:
   m_ObjectHideFlags: 0
@@ -3152,11 +3154,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainMenuCanvasGroup: {fileID: 373082800}
   SettingsPanelCanvasGroup: {fileID: 1310167078}
-  BGImageSpriteRenderer: {fileID: 2037982866}
-  DarkBGImage: {fileID: 21300000, guid: 4c6a8b6c982f8194889869ad51baf4ae, type: 3}
-  LightBGImage: {fileID: 21300000, guid: 99c400c4f6017d54fa009b5552fb996d, type: 3}
-  audioSource: {fileID: 270989692}
+  _AudioSource: {fileID: 270989692}
   SoundToggle: {fileID: 1230428792}
+  BGImageSpriteRenderer: {fileID: 2037982866}
 --- !u!4 &1934273025
 Transform:
   m_ObjectHideFlags: 0

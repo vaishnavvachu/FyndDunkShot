@@ -8,36 +8,57 @@ using UnityEngine.Networking;
 public class GameManager : MonoBehaviour
 {
     #region PUBLIC Variables
-    public static GameManager instance;
+
+    [NonSerialized] public static GameManager instance;
+
+    [Header("Camera & Prefabs")]
     public Camera MainCamera;
+
     public GameObject BasketPrefab;
     public GameObject BallPrefab;
+
+    [Header("Screen Measurements")]
     public float WorldScreenWidth, WorldScreenHeight;
     public bool SizeDecreased;
     public int DecreasedSizeIndex = 0;
-    public float Margin; 
+    public float Margin;
+
+    [Header("UI Elements")]
     public TextMeshProUGUI ScoreTextBox;
     public CanvasGroup GameOverPanel;
     public TextMeshProUGUI GameOverScoreTextBox;
     public TextMeshProUGUI HighScoreTextBox;
+
+    [Header("Audio Components")]
     public AudioSource audioSource;
-    public AudioClip wooSoundClip;
-    public AudioClip bounceSoundClip;
+    public AudioClip WooSoundClip;
+    public AudioClip BounceSoundClip;
+
     #endregion
 
     #region PRIVATE Variables
-    float ScreenHeight, ScreenWidth;
-    int CurrentBasketNumber = 0;
-    Transform[] Baskets;
-    Transform Ball;
-    int TotalBaskets = 3;
-    float BasketWidth;
-    int IncreasedSizeIndex;
-    bool SizeIncreased = false;
-    float CameraAndBasketYDifference;
-    float Spacing;
-    int Score = 0;
-    int HighScore = 0;
+
+    //Scree Resolutions
+    float _screenHeight, _screenWidth;
+    int _currentBasketNumber = 0;
+    float _cameraAndBasketYDifference;
+    float _spacing;
+
+    //Transform Components
+    Transform[] _baskets;
+    Transform _ball;
+
+    //Basket Properties
+    int _totalBaskets = 3;
+    float _basketWidth;
+    int _increasedSizeIndex;
+    bool _sizeIncreased = false;
+    
+    //Score Related Values
+    int _score = 0;
+    int _highScore = 0;
+
+    string AssetBundleURL;
     #endregion
 
     private void Awake()
@@ -49,48 +70,46 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-      
         instance = this;
-
-        
+   
         MainCamera = Camera.main;
-        Baskets = new Transform[TotalBaskets];
-        Ball = null;
+        _baskets = new Transform[_totalBaskets];
+        _ball = null;
 
         //Create the First Basket 
         //Keep a random position within ScreenHeight & ScreenWidth
-        ScreenHeight = Screen.height;
-        ScreenWidth = Screen.width;
+        _screenHeight = Screen.height;
+        _screenWidth = Screen.width;
 
-        SpawnBasketsAtXYPos(ScreenWidth * 0.30f, ScreenHeight * 0.25f, 0);
+        SpawnBasketsAtXYPos(_screenWidth * 0.30f, _screenHeight * 0.25f, 0);
 
         //Then add another Basket to move the ball to.
-        SpawnBasketsAtXYPos(ScreenWidth * 0.75f, ScreenHeight * 0.40f, 1);
+        SpawnBasketsAtXYPos(_screenWidth * 0.75f, _screenHeight * 0.40f, 1);
 
         //Spawn a Ball in the First Basket
         SpawnABall();
 
         //Calculate World Screen Height, Width
         WorldScreenHeight = MainCamera.orthographicSize * 2;
-        WorldScreenWidth = WorldScreenHeight * (ScreenWidth / ScreenHeight);
+        WorldScreenWidth = WorldScreenHeight * (_screenWidth / _screenHeight);
 
         //Set Boundaries on both side of the screen
         //Ball will bounce back when hit
         SetScreenBoundaries();
 
         //Calculate Width of the Basket Sprite
-        SpriteRenderer BasketSpriteRenderer = Baskets[0].GetComponent<SpriteRenderer>();
+        SpriteRenderer BasketSpriteRenderer = _baskets[0].GetComponent<SpriteRenderer>();
 
         float BasketWidthMax = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.max.x, 0, 0)).x;
         float BasketWidthMin = MainCamera.WorldToScreenPoint(new Vector3(BasketSpriteRenderer.bounds.min.x, 0, 0)).x;
-        BasketWidth = BasketWidthMax - BasketWidthMin;
+        _basketWidth = BasketWidthMax - BasketWidthMin;
 
 
         //Distance between first spawned Basket and Camera
-        float CameraAndBasketYDifference = MainCamera.transform.position.y - Baskets[0].position.y;
+        float CameraAndBasketYDifference = MainCamera.transform.position.y - _baskets[0].position.y;
 
         //Calculate Margins
-        Spacing = WorldScreenHeight * Margin;
+        _spacing = WorldScreenHeight * Margin;
 
         //Hide GameOver Menu
         GameOverPanel.alpha = 0;
@@ -107,11 +126,11 @@ public class GameManager : MonoBehaviour
         if (BallController.instance.isBallLaunched )
         {
             //Calculate Camera Bounds
-            float BallPosition = Ball.position.y;
-            float CameraPosition = MainCamera.transform.position.y - CameraAndBasketYDifference;
+            float BallPosition = _ball.position.y;
+            float CameraPosition = MainCamera.transform.position.y - _cameraAndBasketYDifference;
             
-            float CameraBoundaryTop = CameraPosition + Spacing;
-            float CameraBoundaryBottom = CameraPosition - Spacing;
+            float CameraBoundaryTop = CameraPosition + _spacing;
+            float CameraBoundaryBottom = CameraPosition - _spacing;
 
             if (BallPosition > CameraBoundaryTop || BallPosition < CameraBoundaryBottom)
             {
@@ -119,21 +138,21 @@ public class GameManager : MonoBehaviour
                 //Move Camera Up
                 if (BallPosition > CameraBoundaryTop)
                 {
-                    MainCamera.transform.position = new Vector3(0, BallPosition + CameraAndBasketYDifference - Spacing, -10);
+                    MainCamera.transform.position = new Vector3(0, BallPosition + _cameraAndBasketYDifference - _spacing, -10);
                 }
 
                 //Dont allow the Camera to Fall below the Current Basket Height
-                else if (BallPosition < CameraBoundaryBottom && CameraPosition > Baskets[CurrentBasketNumber].position.y)
+                else if (BallPosition < CameraBoundaryBottom && CameraPosition > _baskets[_currentBasketNumber].position.y)
                 {
-                    MainCamera.transform.position = new Vector3(0, BallPosition + CameraAndBasketYDifference + Spacing, -10);
+                    MainCamera.transform.position = new Vector3(0, BallPosition + _cameraAndBasketYDifference + _spacing, -10);
                 }
 
                 //If Ball Drops Below 
                 //Spawn A New Ball
-                else if (BallPosition < CameraPosition - CameraAndBasketYDifference)
+                else if (BallPosition < CameraPosition - _cameraAndBasketYDifference)
                 {
                     BallController.instance.isBallLaunched = false;
-                    Ball.gameObject.SetActive(false);
+                    _ball.gameObject.SetActive(false);
                     GameOver(); 
                 }
             }
@@ -142,23 +161,23 @@ public class GameManager : MonoBehaviour
 
         if (SizeDecreased)
         {
-            Baskets[DecreasedSizeIndex].localScale -= new Vector3(0.3f, 0.3f, 0);
-            if (Baskets[DecreasedSizeIndex].localScale.x <= 0)
+            _baskets[DecreasedSizeIndex].localScale -= new Vector3(0.3f, 0.3f, 0);
+            if (_baskets[DecreasedSizeIndex].localScale.x <= 0)
             {
                 SizeDecreased = false;
-                Baskets[DecreasedSizeIndex].localScale = new Vector3(0, 0, 0);
-                Baskets[DecreasedSizeIndex].rotation = Quaternion.Euler(0, 0, 0);
-                Baskets[DecreasedSizeIndex].gameObject.SetActive(false);
+                _baskets[DecreasedSizeIndex].localScale = new Vector3(0, 0, 0);
+                _baskets[DecreasedSizeIndex].rotation = Quaternion.Euler(0, 0, 0);
+                _baskets[DecreasedSizeIndex].gameObject.SetActive(false);
             }
         }
 
-        if (SizeIncreased)
+        if (_sizeIncreased)
         {
-            Baskets[IncreasedSizeIndex].localScale += new Vector3(0.3f, 0.3f, 0);
-            if (Baskets[IncreasedSizeIndex].localScale.x >= 1)
+            _baskets[_increasedSizeIndex].localScale += new Vector3(0.3f, 0.3f, 0);
+            if (_baskets[_increasedSizeIndex].localScale.x >= 1)
             {
-                SizeIncreased = false;
-                Baskets[IncreasedSizeIndex].localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                _sizeIncreased = false;
+               _baskets[_increasedSizeIndex].localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
         }
 
@@ -170,36 +189,36 @@ public class GameManager : MonoBehaviour
     private void SpawnBasketsAtXYPos(float XPos, float YPos, int BasketCount)
     {
         //Instantiate BasketsPrefab if baskets[BasketCount] is empty
-        if(Baskets[BasketCount] == null)
+        if(_baskets[BasketCount] == null)
         {
-            for(int n = 0; n < TotalBaskets; n++)
+            for(int n = 0; n < _totalBaskets; n++)
             {
                 GameObject NewBasket = Instantiate(BasketPrefab);
                 NewBasket.SetActive(false);
                 NewBasket.GetComponent<BasketController>().index = n;
-                Baskets[n] = NewBasket.transform;
+                _baskets[n] = NewBasket.transform;
             }
         }
-       
-        
+
+
         //Set BasketPrebs at XPos and YPos
-        Baskets[BasketCount].localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        Baskets[BasketCount].position = MainCamera.ScreenToWorldPoint(new Vector3(XPos, YPos, MainCamera.nearClipPlane));
-        Baskets[BasketCount].gameObject.SetActive(true);
+        _baskets[BasketCount].localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        _baskets[BasketCount].position = MainCamera.ScreenToWorldPoint(new Vector3(XPos, YPos, MainCamera.nearClipPlane));
+        _baskets[BasketCount].gameObject.SetActive(true);
     }
 
     private void SpawnABall()
     {
-        if (Ball == null)
+        if (_ball == null)
         {
             GameObject BasketBall = Instantiate(BallPrefab);
-            Ball = BasketBall.transform;
+            _ball = BasketBall.transform;
         }
-        
+
         //Attach the Ball as the Child of CurrentBasket
-        Ball.SetParent(Baskets[CurrentBasketNumber]);
-        Ball.transform.position = new Vector3(Baskets[CurrentBasketNumber].position.x, Baskets[CurrentBasketNumber].position.y + 0.2f, -1);
-        Ball.gameObject.SetActive(true);
+        _ball.SetParent(_baskets[_currentBasketNumber]);
+        _ball.transform.position = new Vector3(_baskets[_currentBasketNumber].position.x, _baskets[_currentBasketNumber].position.y + 0.2f, -1);
+        _ball.gameObject.SetActive(true);
 
         
     }
@@ -229,26 +248,26 @@ public class GameManager : MonoBehaviour
     //Spawn Basket at alternate side of the screen At Random X and Y coordinates
     public void SpawnBasketAtRandomPosition()
     {
-        CurrentBasketNumber = BallController.instance.CurrentBasketIndex;
+        _currentBasketNumber = BallController.instance.CurrentBasketIndex;
 
         float XEndPoint = 0;
         float XStartingPoint = 0;
 
-        Vector3 CurrentBasketPosition = MainCamera.WorldToScreenPoint(Baskets[CurrentBasketNumber].position);
+        Vector3 CurrentBasketPosition = MainCamera.WorldToScreenPoint(_baskets[_currentBasketNumber].position);
 
-        if(CurrentBasketPosition.x > ScreenWidth / 2)
+        if(CurrentBasketPosition.x > _screenWidth / 2)
         {
-            XEndPoint = CurrentBasketPosition.x - BasketWidth;
-            XStartingPoint = 0 + BasketWidth;
+            XEndPoint = CurrentBasketPosition.x - _basketWidth;
+            XStartingPoint = 0 + _basketWidth;
         }
         else
         {
-            XEndPoint = ScreenWidth - BasketWidth / 2;
-            XStartingPoint = CurrentBasketPosition.x + BasketWidth;
+            XEndPoint = _screenWidth - _basketWidth / 2;
+            XStartingPoint = CurrentBasketPosition.x + _basketWidth;
         }
 
-        float YStartingPoint = CurrentBasketPosition.y + (ScreenHeight * 0.10f);
-        float YEndPoint = CurrentBasketPosition.y + (ScreenHeight * 0.30f);
+        float YStartingPoint = CurrentBasketPosition.y + (_screenHeight * 0.10f);
+        float YEndPoint = CurrentBasketPosition.y + (_screenHeight * 0.30f);
 
         float RandomX = UnityEngine.Random.Range(XStartingPoint, XEndPoint);
         float RandomY = UnityEngine.Random.Range(YStartingPoint, YEndPoint);
@@ -256,18 +275,18 @@ public class GameManager : MonoBehaviour
 
         //Get The Next Basket Index and 
         //Spawn the basket at Random X and Y Position
-        Baskets[GetNextBasketIndex(CurrentBasketNumber)].position = MainCamera.ScreenToWorldPoint(new Vector3(RandomX, RandomY, MainCamera.nearClipPlane));
-        Baskets[IncreasedSizeIndex].gameObject.SetActive(true);
-        SizeIncreased = true;
+        _baskets[GetNextBasketIndex(_currentBasketNumber)].position = MainCamera.ScreenToWorldPoint(new Vector3(RandomX, RandomY, MainCamera.nearClipPlane));
+        _baskets[_increasedSizeIndex].gameObject.SetActive(true);
+        _sizeIncreased = true;
     }
 
     // Generate the Index for the Next Basket Based on the Previous Basket Index
     private int GetNextBasketIndex(int index)
     {
-        for(int n = 0; n< Baskets.Length; n++)
+        for(int n = 0; n< _baskets.Length; n++)
         {
             if (n != index && index != DecreasedSizeIndex)
-                return IncreasedSizeIndex = n;
+                return _increasedSizeIndex = n;
         }
 
         return 0;
@@ -275,12 +294,12 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseScoreCount()
     {
-        Score++;
+        _score++;
 
         //Display Score
         ScoreTextBox.gameObject.SetActive(true);
 
-        ScoreTextBox.text = Score.ToString();
+        ScoreTextBox.text = _score.ToString();
 
         //Play Sounds
         PlayWooSound();
@@ -290,30 +309,28 @@ public class GameManager : MonoBehaviour
     {
         //Show Game Over Screen
         GameOverPanel.alpha = 1;
-        GameOverScoreTextBox.text = "" + Score;
+        GameOverScoreTextBox.text = "" + _score;
         GameOverPanel.interactable = true;
-        Baskets[CurrentBasketNumber].transform.rotation = new Quaternion(0f,0f,0f,1);
+       _baskets[_currentBasketNumber].transform.rotation = new Quaternion(0f,0f,0f,1);
         
-        if(Score > HighScore)
+        if(_score > _highScore)
         {
-            PlayerPrefs.SetInt("HighScore", Score);
+            PlayerPrefs.SetInt("HighScore", _score);
             PlayerPrefs.Save();
         }
 
-        HighScore = PlayerPrefs.GetInt("HighScore", 0);
+        _highScore = PlayerPrefs.GetInt("HighScore", 0);
 
-        HighScoreTextBox.text = HighScore.ToString();
+        HighScoreTextBox.text = _highScore.ToString();
 
         Time.timeScale = 0;
-
-
     }
 
     public void PlayAgain()
     {
         //Reset Score
-        Score = 0;
-        ScoreTextBox.text = Score.ToString();
+        _score = 0;
+        ScoreTextBox.text = _score.ToString();
 
         StartCoroutine(RestartGame());
        
@@ -331,15 +348,19 @@ public class GameManager : MonoBehaviour
        
     }
 
+    //Change Sound Clip
+    //Play BounceSound
     public void PlayBounceSound()
     {
-        audioSource.clip = bounceSoundClip;
+        audioSource.clip = BounceSoundClip;
         audioSource.Play();
     }
 
+    //Change Sound Clip
+    //Play Woo Sound
     public void PlayWooSound()
     {
-        audioSource.clip = wooSoundClip;
+        audioSource.clip = WooSoundClip;
         audioSource.Play();
     }
 
@@ -347,7 +368,16 @@ public class GameManager : MonoBehaviour
     //Load Basketball Prefab and Basket Prefab
     IEnumerator DownloadAssetBundles()
     {
-        UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle("C:/Users/VEMA/Downloads/basketball");//UnityWebRequest.GetAssetBundle("http://www.my-server.com/myData.unity3d");
+        
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        {
+            AssetBundleURL = "https://firebasestorage.googleapis.com/v0/b/fynddunkshoot.appspot.com/o/basketball?alt=media&token=864ab03d-1a48-47b0-9aea-bd5d99f1aabd";
+        }
+        else
+        {
+            AssetBundleURL = "https://firebasestorage.googleapis.com/v0/b/fynddunkshoot.appspot.com/o/Android_AssetBundles%2Fbasketball?alt=media&token=6ec61c35-d78f-48f2-b54a-a14796c95617";
+        }
+        UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle(AssetBundleURL);
         yield return www.SendWebRequest();
 
         if (www.isNetworkError || www.isHttpError)

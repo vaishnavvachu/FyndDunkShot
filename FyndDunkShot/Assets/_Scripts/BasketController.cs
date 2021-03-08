@@ -1,19 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BasketController : MonoBehaviour
 {
-    public static BasketController instance;
-    public int index;
+    [NonSerialized] public static BasketController instance;
 
+    public int index;                               //Index of the Basket
+    public ParticleSystem particleEffects;          //Particle Effects that show up during winning
 
     private void Awake()
     {
         instance = this;
     }
 
- 
+
     //Stop the ball from bouncing when it enters the collider on a basket
     //Hold the ball and let it be launched to other
     private void OnTriggerStay2D(Collider2D collision)
@@ -39,6 +41,7 @@ public class BasketController : MonoBehaviour
 
             //Increase the Score By 1
             GameManager.instance.IncreaseScoreCount();
+            particleEffects.Play();
 
         }
     }

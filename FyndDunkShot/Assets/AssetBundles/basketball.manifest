@@ -1,0 +1,47 @@
+ManifestFileVersion: 0
+CRC: 4091099989
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9faca09fa8be40128629cd7a67511cc0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 085d45c10fcfc04282969f487137e08f
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 50
+  Script: {instanceID: 0}
+- Class: 58
+  Script: {instanceID: 0}
+- Class: 62
+  Script: {instanceID: 0}
+- Class: 68
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9aaa565c6f0dd1445a3b272792d85881, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 835fae6d9be27c644b4435ced2fb7f23, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Resources/Basket.prefab
+- Assets/Resources/BasketBall.prefab
+Dependencies: []

@@ -1,102 +1,122 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
     #region PUBLIC Variables
+
+    [Header("Ball Properties")]
     public bool isBallLaunched;
     public int CurrentBasketIndex;
+
+    [Header("Trajectory Prefabs")]
     public GameObject TrajectoryPointsPrefab;
-    public static BallController instance;
+
+    [NonSerialized]public static BallController instance;
+
     #endregion
 
     #region PRIVATE Variables
-    Vector2 BallLaunchVelocity;
-    Vector2 Gravity;
-    Vector2 InitialPosition;
 
-    float Power, TotalForce, distance, ForcePercentage;
-    float MinOffset, MaxOffset;
-    Rigidbody2D BallRigidbody2D;
-    Vector3 Normal;
+    //Ball Properties
+    Vector2 _ballLaunchVelocity;
+    Vector2 _gravity;
+    Vector2 _initialPosition;
 
-    GameObject[] Points;
-    int TotalNumberOfPoints = 10;
-    Vector3 normal;
-    UIController uiController;
+    float _power, _totalForce, _distance, _forcePercentage;
+    float _minOffset, _maxOffset;
+
+    Rigidbody2D _ballRigidbody2D;
+
+    //Trajectory Points
+    GameObject[] _points;
+    int _totalNumberOfPoints = 10;
+    Vector3 _normal;
+
+    //UI Controller
+    UIController _uiController;
+
     #endregion
-
-
 
     private void Awake()
     {
         isBallLaunched = false;
         instance = this;
-        uiController = FindObjectOfType<UIController>();
+        _uiController = FindObjectOfType<UIController>();
     }
+
     // Start is called before the first frame update
     void Start()
     {
-        BallRigidbody2D = GetComponent<Rigidbody2D>();
-        Power = 5f;
-        TotalForce = 7f;
-        Gravity = new Vector2(0f, -9.81f);
+        _ballRigidbody2D = GetComponent<Rigidbody2D>();
+        _power = 5f;
+        _totalForce = 7f;
+        _gravity = new Vector2(0f, -9.81f);
         CurrentBasketIndex = 0;
 
-        Points = new GameObject[TotalNumberOfPoints];
+        _points = new GameObject[_totalNumberOfPoints];
 
-        for (int n = 0; n < TotalNumberOfPoints; n++)
+        for (int n = 0; n < _totalNumberOfPoints; n++)
         {
             GameObject TrajectoryPoint = Instantiate(TrajectoryPointsPrefab);
-            Points[n] = TrajectoryPoint;
-            Points[n].SetActive(false);
+            _points[n] = TrajectoryPoint;
+            _points[n].SetActive(false);
         }
 
        
         GameManager gameManagerInstance = GameManager.instance;
 
-        MinOffset = gameManagerInstance.MainCamera.transform.position.x - gameManagerInstance.WorldScreenWidth / 2;
-        MaxOffset = gameManagerInstance.MainCamera.transform.position.y - gameManagerInstance.WorldScreenWidth / 2;
+        _minOffset = gameManagerInstance.MainCamera.transform.position.x - gameManagerInstance.WorldScreenWidth / 2;
+        _maxOffset = gameManagerInstance.MainCamera.transform.position.y - gameManagerInstance.WorldScreenWidth / 2;
         
     }
 
     // Update is called once per frame
     //Check for user Touch and Drag
-    //Implement the Slingshot mechanism
-    //If user drags the ball more than ForcePercentage (50%), Launch the Ball int the angle of Touch-Drag
+    
     void Update()
     {
         if (Input.touchCount > 0 && !isBallLaunched)
         {
-
-            switch (Input.GetTouch(0).phase)
-            {
-                case TouchPhase.Began:
-                    InitialPosition = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-                    break;
-
-                case TouchPhase.Moved:
-                    uiController.BeginGame();
-                    Vector2 toPosition = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-                    BallLaunchVelocity = CalculateForceBetween(InitialPosition, toPosition);
-                    transform.parent.transform.rotation = Quaternion.Euler(0, 0, CalculateAngleBetween(InitialPosition, toPosition));
-                    ShowTrajectoryFromBallPosition();
-                    break;
-
-                case TouchPhase.Ended:
-                    if (ForcePercentage > 0.5)
-                    {
-                        isBallLaunched = true;
-                        BallRigidbody2D.simulated = true;
-                        BallRigidbody2D.velocity = -1 * BallLaunchVelocity;
-                        HideTrajectoryFromBall();
-                    }
-                    break;
-            }
-
-
+            ProcessTouchInput();
         }
+    }
+
+    //Implement the Slingshot mechanism
+    //If user drags the ball more than ForcePercentage (50%), Launch the Ball int the angle of Touch-Drag
+    private void ProcessTouchInput()
+    {
+        switch (Input.GetTouch(0).phase)
+        {
+            case TouchPhase.Began:
+                _initialPosition = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+                break;
+
+                //When Drag Occurs
+                //Show Trajectory
+            case TouchPhase.Moved:
+                _uiController.BeginGame();
+                Vector2 toPosition = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+                _ballLaunchVelocity = CalculateForceBetween(_initialPosition, toPosition);
+                transform.parent.transform.rotation = Quaternion.Euler(0, 0, CalculateAngleBetween(_initialPosition, toPosition));
+                ShowTrajectoryFromBallPosition();
+                break;
+
+                //When Drag Ends, Launch Ball
+                //Hide Trajecotry
+            case TouchPhase.Ended:
+                if (_forcePercentage > 0.5)
+                {
+                    isBallLaunched = true;
+                    _ballRigidbody2D.simulated = true;
+                    _ballRigidbody2D.velocity = -1 * _ballLaunchVelocity;
+                    HideTrajectoryFromBall();
+                }
+                break;
+        }
+
     }
 
 
@@ -104,19 +124,19 @@ public class BallController : MonoBehaviour
     //Clamp the Force value and Calculate ForcePercentage
     private Vector2 CalculateForceBetween(Vector2 fromPos, Vector2 toPos)
     {
-        Vector2 force = (toPos - fromPos) * Power;
+        Vector2 force = (toPos - fromPos) * _power;
 
-        distance = Vector2.Distance(fromPos, toPos);
+        _distance = Vector2.Distance(fromPos, toPos);
 
         //Cap distance at 1.3f
-        if (distance > 1.3f)
+        if (_distance > 1.3f)
         {
-            distance = 1.3f;
+            _distance = 1.3f;
         }
          
-        Vector2 clampedForce = Vector2.ClampMagnitude(force, TotalForce) * distance;
+        Vector2 clampedForce = Vector2.ClampMagnitude(force, _totalForce) * _distance;
 
-        ForcePercentage = clampedForce.magnitude / TotalForce;
+        _forcePercentage = clampedForce.magnitude / _totalForce;
 
         return clampedForce;
     }
@@ -140,35 +160,41 @@ public class BallController : MonoBehaviour
         int index = 0;
 
         Vector2 curvePoint = Vector2.zero;
-        Vector2 curveForce = BallLaunchVelocity;
+        Vector2 curveForce = _ballLaunchVelocity;
 
+        //Calculate the distance for 100 points
         int maxIterations = 100;
         for(int i = 0; i< maxIterations; i++)
         {
+            //Trace the Ball's Path through each of the 100 Points
             float time = 0.01f * i;
-            curvePoint = Gravity * time * time * 0.5f + BallLaunchVelocity * time + (Vector2)transform.position;
-            if (curvePoint.x < MinOffset + 0.01f && curvePoint.x > MinOffset - 0.01f || curvePoint.x == MaxOffset)
-                curveForce = Vector2.Reflect(curvePoint, normal);
+            curvePoint = _gravity * time * time * 0.5f + _ballLaunchVelocity * time + (Vector2)transform.position;
+            if (curvePoint.x < _minOffset + 0.01f && curvePoint.x > _minOffset - 0.01f || curvePoint.x == _maxOffset)
+                curveForce = Vector2.Reflect(curvePoint, _normal);
 
+            //Plot the Position of the Path to Only 10 Points
             if (i % 10 == 0)
             {
                 float elapsedTime = index * 0.08f;
                 if (elapsedTime > 0)
                     elapsedTime *= -1;
-                Points[index].SetActive(true);
-                Points[index].transform.localScale = new Vector3(PointSize, PointSize, PointSize);
-                Points[index].transform.position = Gravity * elapsedTime * elapsedTime * 0.5f + curveForce * elapsedTime + (Vector2)transform.position;
 
-                SpriteRenderer spriteRenderer = Points[index].GetComponent<SpriteRenderer>();
+                //Enable the Points
+                _points[index].SetActive(true);
+                _points[index].transform.localScale = new Vector3(PointSize, PointSize, PointSize);
+                _points[index].transform.position = _gravity * elapsedTime * elapsedTime * 0.5f + curveForce * elapsedTime + (Vector2)transform.position;
+
+                SpriteRenderer spriteRenderer = _points[index].GetComponent<SpriteRenderer>();
                 Color alpha = spriteRenderer.color;
 
-                if (ForcePercentage > 0.5)
-                    alpha.a = 1 - ((1 - ForcePercentage) * 2);
+                if (_forcePercentage > 0.5)
+                    alpha.a = 1 - ((1 - _forcePercentage) * 2);
                 else
                     alpha.a = 0;
 
                 spriteRenderer.color = alpha;
 
+                //Decrease Size of Points Gradually
                 PointSize -= 0.0025f;
                 index++;
             }
@@ -178,18 +204,19 @@ public class BallController : MonoBehaviour
     //Hide the Trajectory When the Touch is no longer there
     private void HideTrajectoryFromBall()
     {
-        for (int n = 0; n < TotalNumberOfPoints; n++)
+        for (int n = 0; n < _totalNumberOfPoints; n++)
         {
-            Points[n].SetActive(false);
-            Points[n].transform.position = transform.position;
+            _points[n].SetActive(false);
+            _points[n].transform.position = transform.position;
         }
     }
 
     //Do Not change speed and direction after collision
     void OnCollisionEnter2D(Collision2D collision2D)
     {
-        normal = collision2D.contacts[0].normal;
+        _normal = collision2D.contacts[0].normal;
 
+        //Play Sound When Ball Hits anything
         GameManager.instance.PlayBounceSound();
     }
 
