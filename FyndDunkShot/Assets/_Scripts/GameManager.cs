@@ -14,12 +14,14 @@ public class GameManager : MonoBehaviour
     public float WorldScreenWidth, WorldScreenHeight;
     public bool SizeDecreased;
     public int DecreasedSizeIndex = 0;
-    public float Margin;
-    public int Score = 0;
+    public float Margin; 
     public TextMeshProUGUI ScoreTextBox;
     public CanvasGroup GameOverPanel;
     public TextMeshProUGUI GameOverScoreTextBox;
-  
+    public TextMeshProUGUI HighScoreTextBox;
+    public AudioSource audioSource;
+    public AudioClip wooSoundClip;
+    public AudioClip bounceSoundClip;
     #endregion
 
     #region PRIVATE Variables
@@ -33,7 +35,8 @@ public class GameManager : MonoBehaviour
     bool SizeIncreased = false;
     float CameraAndBasketYDifference;
     float Spacing;
-    
+    int Score = 0;
+    int HighScore = 0;
     #endregion
 
 
@@ -123,7 +126,7 @@ public class GameManager : MonoBehaviour
                 {
                     BallController.instance.isBallLaunched = false;
                     Ball.gameObject.SetActive(false);
-                    SpawnABall();
+                    //SpawnABall();
                     GameOver(); 
                 }
             }
@@ -270,18 +273,31 @@ public class GameManager : MonoBehaviour
         //Display Score
 
         ScoreTextBox.text = Score.ToString();
+
+        //Play Sounds
+        PlayWooSound();
     }
 
     private void GameOver()
     {
         //Show Game Over Screen
-        
         GameOverPanel.alpha = 1;
         GameOverScoreTextBox.text = "Your Score is: " + Score;
         GameOverPanel.interactable = true;
         Baskets[CurrentBasketNumber].transform.rotation = new Quaternion(0f,0f,0f,1);
+        
+        if(Score > HighScore)
+        {
+            PlayerPrefs.SetInt("HighScore", Score);
+            PlayerPrefs.Save();
+        }
+
+        HighScore = PlayerPrefs.GetInt("HighScore", 0);
+
+        HighScoreTextBox.text ="High Score:" + HighScore.ToString();
 
         Time.timeScale = 0;
+
 
     }
 
@@ -289,12 +305,34 @@ public class GameManager : MonoBehaviour
     {
         //Reset Score
         Score = 0;
+        ScoreTextBox.text = Score.ToString();
 
+        StartCoroutine("RestartGame");
+       
+    }
+
+    IEnumerator RestartGame()
+    {
+        Time.timeScale = 1;
+
+        yield return new WaitForSeconds(0.5f);
         
         GameOverPanel.alpha = 0;
         GameOverPanel.interactable = false;
+        SpawnABall();
+       
+    }
 
-        Time.timeScale = 1;
+    public void PlayBounceSound()
+    {
+        audioSource.clip = bounceSoundClip;
+        audioSource.Play();
+    }
+
+    public void PlayWooSound()
+    {
+        audioSource.clip = wooSoundClip;
+        audioSource.Play();
     }
 
 

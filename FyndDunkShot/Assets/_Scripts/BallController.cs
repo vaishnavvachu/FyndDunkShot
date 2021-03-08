@@ -8,9 +8,7 @@ public class BallController : MonoBehaviour
     public bool isBallLaunched;
     public int CurrentBasketIndex;
     public GameObject TrajectoryPointsPrefab;
-
     public static BallController instance;
-
     #endregion
 
     #region PRIVATE Variables
@@ -57,6 +55,7 @@ public class BallController : MonoBehaviour
 
         MinOffset = gameManagerInstance.MainCamera.transform.position.x - gameManagerInstance.WorldScreenWidth / 2;
         MaxOffset = gameManagerInstance.MainCamera.transform.position.y - gameManagerInstance.WorldScreenWidth / 2;
+        
     }
 
     // Update is called once per frame
@@ -185,9 +184,9 @@ public class BallController : MonoBehaviour
     //Do Not change speed and direction after collision
     void OnCollisionEnter2D(Collision2D collision2D)
     {
-        
         normal = collision2D.contacts[0].normal;
-       
+
+        GameManager.instance.PlayBounceSound();
     }
 
 }
