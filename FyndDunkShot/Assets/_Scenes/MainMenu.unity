@@ -1635,10 +1635,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 0}
-  BasketPrefab: {fileID: 6907735073416145365, guid: 8f08814c41488f44b83c07d60275d44e,
-    type: 3}
-  BallPrefab: {fileID: 1441742651579767731, guid: 13d3bbcc895b24a4fb29ca003769e381,
-    type: 3}
+  BasketPrefab: {fileID: 0}
+  BallPrefab: {fileID: 0}
   WorldScreenWidth: 0
   WorldScreenHeight: 0
   SizeDecreased: 0

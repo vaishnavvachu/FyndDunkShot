@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
@@ -39,12 +40,19 @@ public class GameManager : MonoBehaviour
     int HighScore = 0;
     #endregion
 
+    private void Awake()
+    {
+        //Download The AssetBundles
+        StartCoroutine(DownloadAssetBundles());
 
+    }
     // Start is called before the first frame update
     void Start()
     {
       
         instance = this;
+
+        
         MainCamera = Camera.main;
         Baskets = new Transform[TotalBaskets];
         Ball = null;
@@ -126,7 +134,6 @@ public class GameManager : MonoBehaviour
                 {
                     BallController.instance.isBallLaunched = false;
                     Ball.gameObject.SetActive(false);
-                    //SpawnABall();
                     GameOver(); 
                 }
             }
@@ -307,7 +314,7 @@ public class GameManager : MonoBehaviour
         Score = 0;
         ScoreTextBox.text = Score.ToString();
 
-        StartCoroutine("RestartGame");
+        StartCoroutine(RestartGame());
        
     }
 
@@ -335,5 +342,24 @@ public class GameManager : MonoBehaviour
         audioSource.Play();
     }
 
+    //Download The AssetBundles and 
+    //Load Basketball Prefab and Basket Prefab
+    IEnumerator DownloadAssetBundles()
+    {
+        UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle("C:/Users/VEMA/Downloads/basketball");//UnityWebRequest.GetAssetBundle("http://www.my-server.com/myData.unity3d");
+        yield return www.SendWebRequest();
 
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(www);
+
+            BallPrefab = bundle.LoadAsset("basketball") as GameObject;
+
+            BasketPrefab = bundle.LoadAsset("basket") as GameObject;
+        }
+    }
 }
